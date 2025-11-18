@@ -8,10 +8,13 @@
     "start": "node dist/index.js",
     "dev": "npm run build && npm run start"
   },
-  "dependencies": {
+  "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@repo/db": "workspace:*",
     "@types/express": "^5.0.5",
+    "@repo/common": "workspace:*"
+  },
+  "dependencies": {
     "express": "^5.1.0",
     "zod": "^4.1.12"
   },
