@@ -18,6 +18,26 @@ model userSchema {
   username    String    @unique
   email       String    @unique
   password    String    
+  photo       String
+  rooms       roomSchema[]
+  chats       chatSchema[]
 }
 
+model roomSchema{
+  id          Int       @id         @default(autoincrement())
+  slug        String    @unique     
+  createdAt   DateTime  @default(now())
+  adminId     String
+  admin       userSchema  @relation(fields: [adminId], references: [id]) // define the relation with admin Id with userSchema
+  chats       chatSchema[]
+}
+
+model chatSchema{
+  id          Int       @id         @default(autoincrement())
+  roomId      Int
+  message     String
+  userId      String
+  room        roomSchema  @relation(fields: [roomId], references: [id])
+  user        userSchema  @relation(fields: [userId], references: [id])
+}
 
