@@ -18,7 +18,7 @@ model userSchema {
   username    String    @unique
   email       String    @unique
   password    String    
-  photo       String
+  photo       String?
   rooms       roomSchema[]
   chats       chatSchema[]
 }
