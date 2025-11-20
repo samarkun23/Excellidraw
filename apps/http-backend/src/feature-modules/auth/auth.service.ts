@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express"
-import { registerSchema, loginSchema } from "@repo/common/types"
+import { registerSchema, loginSchema, createRoomSchema } from "@repo/common/types"
 import { prismaClient } from '@repo/db/client'
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "@repo/be-common/config"
 import bcrypt from 'bcrypt'
+import { authMiddleware } from "../middleware/authmiddleware"
 
 export const authRouter: Router = Router();
 const saltRounds = 15;
@@ -86,3 +87,30 @@ export const login = async (req: Request, res: Response) => {
   return res.json({ token, message: "User signin" });
 
 }
+
+// TODO : Put the middleware here 
+authRouter.post("/room",authMiddleware, async(req, res) =>{
+  const parseData = createRoomSchema.safeParse(req.body);
+
+  if(!parseData.success){
+    res.json({
+      message: "Incorrect inputs"
+    })
+    return;
+  }
+
+  //@ts-ignore
+  const userId = req.userId;
+
+  await prismaClient.roomSchema.create({
+    data:{
+      slug: parseData.data.name,
+      adminId: userId
+    }
+  })
+
+  res.json({
+    roomId: 123
+  })
+
+})
