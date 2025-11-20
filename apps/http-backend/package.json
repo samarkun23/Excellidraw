@@ -9,13 +9,16 @@
     "dev": "npm run build && npm run start"
   },
   "devDependencies": {
+    "@repo/be-common": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^4.1.12"
