@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/feature-modules/index.ts","./src/feature-modules/auth/auth.service.ts"],"errors":true,"version":"5.9.2"}
+{"root":["./src/index.ts","./src/feature-modules/index.ts","./src/feature-modules/auth/auth.service.ts","./src/feature-modules/middleware/authmiddleware.ts","./src/feature-modules/room/room.ts"],"version":"5.9.2"}

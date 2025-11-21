@@ -49,7 +49,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
 })
 
-export const login = async (req: Request, res: Response) => {
+authRouter.post("/signin" , async (req: Request, res: Response) => {
 
   const Parsedata = loginSchema.safeParse(req.body);
   if (!Parsedata.success) {
@@ -87,4 +87,4 @@ export const login = async (req: Request, res: Response) => {
   return res.json({ token, message: "User signin" });
 
 }
-
+)
