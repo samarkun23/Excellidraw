@@ -4,7 +4,6 @@ import { prismaClient } from '@repo/db/client'
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "@repo/be-common/config"
 import bcrypt from 'bcrypt'
-import { authMiddleware } from "../middleware/authmiddleware"
 
 export const authRouter: Router = Router();
 const saltRounds = 15;
@@ -49,7 +48,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
 })
 
-authRouter.post("/signin" , async (req: Request, res: Response) => {
+authRouter.post("/signin", async (req: Request, res: Response) => {
 
   const Parsedata = loginSchema.safeParse(req.body);
   if (!Parsedata.success) {
@@ -77,13 +76,13 @@ authRouter.post("/signin" , async (req: Request, res: Response) => {
     user.password
   )
 
-  if(!isPasswordValid){
-    return res.status(401).json({message: "Incorrect Password"});
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: "Incorrect Password" });
   }
 
   const token = jwt.sign({
     userId: user.id
-  }, JWT_SECRET, {expiresIn:"7D"})
+  }, JWT_SECRET, { expiresIn: "7D" })
   return res.json({ token, message: "User signin" });
 
 }
