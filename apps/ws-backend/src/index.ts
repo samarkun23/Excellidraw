@@ -13,18 +13,23 @@ interface User {
 const users: User[] = []
 
 function checkToken(token: string): string | null {
-
-  const decoded = jwt.verify(token, JWT_SECRET);
-
-  if (typeof decoded === 'string') {
-    return null
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+  
+    if (typeof decoded === 'string') {
+      return null
+    }
+  
+    if (!decoded || !decoded.userId) {
+      return null
+    }
+  
+    return decoded.userId;
+    
+  } catch (error) {
+    return null; 
   }
-
-  if (!decoded || !decoded.userId) {
-    return null
-  }
-
-  return decoded.userId;
+  return null
 }
 
 
