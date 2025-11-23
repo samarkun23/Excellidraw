@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -b",
     "start": "node dist/index.js",
-    "dev": "npm run build && npm run start"
+    "worker": "node dist/feature-module/queue-worker/messages.worker.js",
+    "dev": "concurrently \"npm run start\" \"npm run worker\""
   },
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -21,7 +22,8 @@
   "license": "ISC",
   "devDependencies": {
     "@repo/be-common": "workspace:*",
+    "@repo/db": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
-    "@repo/db": "workspace:*"
+    "concurrently": "^9.2.1"
   }
 }

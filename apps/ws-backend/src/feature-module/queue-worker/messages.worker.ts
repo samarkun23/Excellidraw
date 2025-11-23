@@ -2,9 +2,14 @@ import { Worker } from "bullmq";
 import IORedis from 'ioredis';
 import { prismaClient } from "@repo/db/client"
 
-const connection = new IORedis();
+console.log("Entering ")
+const connection = new IORedis({
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false
+});
 
-const worker = new Worker("messages", async(job) => {
+const worker = new Worker("messages", async (job) => {
+    console.log("Connecton message queue")
     const data = job.data;
 
     await prismaClient.chatSchema.create({
@@ -14,6 +19,6 @@ const worker = new Worker("messages", async(job) => {
             message: data.message
         }
     })
-}, {connection})
+}, { connection })
 
 worker.on("completed", () => console.log(`Message stored in DB`));

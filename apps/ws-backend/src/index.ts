@@ -13,25 +13,28 @@ interface User {
 }
 
 const users: User[] = []
-const connection = new IORedis();
-const messageQueue = new Queue("messages", {connection});
+const connection = new IORedis({
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false
+});
+const messageQueue = new Queue("messages", { connection });
 
 function checkToken(token: string): string | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-  
+
     if (typeof decoded === 'string') {
       return null
     }
-  
+
     if (!decoded || !decoded.userId) {
       return null
     }
-  
+
     return decoded.userId;
-    
+
   } catch (error) {
-    return null; 
+    return null;
   }
   return null
 }
@@ -48,7 +51,7 @@ wss.on('connection', function connection(ws, request) {
   const userId = checkToken(token);
 
   if (!userId) {
-    ws.close() 
+    ws.close()
     return null;
   }
 
@@ -62,18 +65,18 @@ wss.on('connection', function connection(ws, request) {
   ws.on('message', function message(data) {
     const parsedData = JSON.parse(data as unknown as string);
 
-    if(parsedData.type === "join_room"){
+    if (parsedData.type === "join_room") {
       const user = users.find(x => x.ws === ws);
       user?.rooms.push(parsedData.roomId);
     }
 
-    if(parsedData.type === "leave_room"){
+    if (parsedData.type === "leave_room") {
       const user = users.find(x => x.ws === ws);
-      if(!user){return}
+      if (!user) { return }
       user.rooms = user?.rooms.filter(x => x === parsedData.room);
     }
 
-    if(parsedData.type === "chat"){
+    if (parsedData.type === "chat") {
       const roomId = parsedData.roomId;
       const message = parsedData.message
 
@@ -84,7 +87,7 @@ wss.on('connection', function connection(ws, request) {
       })
 
       users.forEach(user => {
-        if(user.rooms.includes(roomId)){
+        if (user.rooms.includes(roomId)) {
           user.ws.send(JSON.stringify({
             type: "chat",
             message: message,
