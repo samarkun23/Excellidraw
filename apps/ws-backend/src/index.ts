@@ -1,6 +1,8 @@
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "@repo/be-common/config"
+import { Queue } from "bullmq";
+import IORedis from 'ioredis'
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -11,6 +13,8 @@ interface User {
 }
 
 const users: User[] = []
+const connection = new IORedis();
+const messageQueue = new Queue("messages", {connection});
 
 function checkToken(token: string): string | null {
   try {
@@ -72,6 +76,12 @@ wss.on('connection', function connection(ws, request) {
     if(parsedData.type === "chat"){
       const roomId = parsedData.roomId;
       const message = parsedData.message
+
+      messageQueue.add("store-message", {
+        roomId,
+        userId,
+        message,
+      })
 
       users.forEach(user => {
         if(user.rooms.includes(roomId)){
