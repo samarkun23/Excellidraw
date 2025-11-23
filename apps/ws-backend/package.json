@@ -11,6 +11,8 @@
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/ws": "^8.18.1",
+    "bullmq": "^5.64.1",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.18.3"
   },
@@ -18,7 +20,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@repo/be-common": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
-    "@repo/be-common": "workspace:*"
+    "@repo/db": "workspace:*"
   }
 }
