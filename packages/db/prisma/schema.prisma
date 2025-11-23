@@ -37,6 +37,7 @@ model chatSchema{
   roomId      Int
   message     String
   userId      String
+  createdAt   DateTime  @default(now())
   room        roomSchema  @relation(fields: [roomId], references: [id])
   user        userSchema  @relation(fields: [userId], references: [id])
 }
