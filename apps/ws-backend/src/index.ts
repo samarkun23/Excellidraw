@@ -63,7 +63,14 @@ wss.on('connection', function connection(ws, request) {
 
 
   ws.on('message', function message(data) {
-    const parsedData = JSON.parse(data as unknown as string);
+    //@ts-ignore
+    let parsedData;
+
+    try {
+      parsedData = JSON.parse(data.toString());
+    } catch (error) {
+      console.error("Invalid JSON received", data.toString()) 
+    }
 
     if (parsedData.type === "join_room") {
       const user = users.find(x => x.ws === ws);
@@ -73,6 +80,7 @@ wss.on('connection', function connection(ws, request) {
     if (parsedData.type === "leave_room") {
       const user = users.find(x => x.ws === ws);
       if (!user) { return }
+      //@ts-ignore
       user.rooms = user?.rooms.filter(x => x === parsedData.room);
     }
 
