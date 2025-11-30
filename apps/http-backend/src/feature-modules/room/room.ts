@@ -56,3 +56,16 @@ roomRouter.get("/chats/:roomId", async (req, res) => {
         messages
     })
 })
+
+roomRouter.get("/:slug", async(req, res) => {
+    const slug = req.params.slug;
+    const room = await prismaClient.roomSchema.findFirst({
+        where: {
+            slug
+        } 
+    })
+
+    res.json({
+        room
+    })
+})
