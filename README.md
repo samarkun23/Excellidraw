@@ -1,6 +1,6 @@
-# Turborepo starter
+# This project is under development
 
-This Turborepo starter is maintained by the Turborepo core team.
+We are almost ready just few work left .
 
 ## Using this example
 
