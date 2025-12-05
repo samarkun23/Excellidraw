@@ -1,4 +1,4 @@
-import { Worker } from "bullmq";
+import { tryCatch, Worker } from "bullmq";
 import IORedis from 'ioredis';
 import { prismaClient } from "@repo/db/client"
 
@@ -10,15 +10,21 @@ const connection = new IORedis({
 
 const worker = new Worker("messages", async (job) => {
     console.log("Connecton message queue")
-    const data = job.data;
+    try{
+        const data = job.data;
+        console.log(data)
+    
+        await prismaClient.chatSchema.create({
+            data: {
+                roomId: data.roomId,
+                userId: data.userId,
+                message: data.message
+            }
+        })
 
-    await prismaClient.chatSchema.create({
-        data: {
-            roomId: data.roomId,
-            userId: data.userId,
-            message: data.message
-        }
-    })
+    }catch(e){
+        console.log("DB ERROR : ", e);
+    }
 }, { connection })
 
 worker.on("completed", () => console.log(`Message stored in DB`));

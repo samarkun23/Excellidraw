@@ -41,6 +41,7 @@ function checkToken(token: string): string | null {
 
 
 wss.on('connection', function connection(ws, request) {
+  console.log("ws connected!");
   const url = request.url;
   if (!url) {
     return;
@@ -63,13 +64,12 @@ wss.on('connection', function connection(ws, request) {
 
 
   ws.on('message', function message(data) {
-    //@ts-ignore
-    let parsedData;
 
-    try {
+    let parsedData;
+    if(typeof data !== 'string'){
       parsedData = JSON.parse(data.toString());
-    } catch (error) {
-      console.error("Invalid JSON received", data.toString()) 
+    }else{
+      parsedData = JSON.parse(data)
     }
 
     if (parsedData.type === "join_room") {
@@ -89,10 +89,10 @@ wss.on('connection', function connection(ws, request) {
       const message = parsedData.message
 
       messageQueue.add("store-message", {
-        roomId,
+        roomId: Number(roomId),
         userId,
         message,
-      })
+      }).then((job) => console.log("JOB ADDED:", job.id));
 
       users.forEach(user => {
         if (user.rooms.includes(roomId)) {
