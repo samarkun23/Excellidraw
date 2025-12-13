@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "@repo/be-common/config"
 import { Queue } from "bullmq";
 import IORedis from 'ioredis'
+import { AuthWebSocket, wsAuthMiddleware } from "./feature-module/middleware";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -12,85 +13,82 @@ interface User {
   userId: string
 }
 
-const users: User[] = []
+const users: User[] = [];
+
 const connection = new IORedis({
   maxRetriesPerRequest: null,
   enableReadyCheck: false
 });
+
 const messageQueue = new Queue("messages", { connection });
 
-function checkToken(token: string): string | null {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
 
-    if (typeof decoded === 'string') {
-      return null
-    }
+wss.on('connection', function connection(ws: AuthWebSocket, request) {
+  // console.log("ws connected!");
+  // const url = request.url;
+  // if (!url) {
+  //   return;
+  // }
 
-    if (!decoded || !decoded.userId) {
-      return null
-    }
+  // console.log("GET THE TOKEN")
+  // const queryParams = new URLSearchParams(url.split('?')[1]);
+  // const token = queryParams.get('token') || "";
+  // const userId = checkToken(token);
+  // console.log("TOKEN", token);
 
-    return decoded.userId;
+  // if (!userId) {
+  //   ws.close()
+  //   return;
+  // }
+  wsAuthMiddleware(ws, request, () => {
+    users.push({
+      ws,
+      userId: ws.userId!,
+      rooms: [],
+    })
 
-  } catch (error) {
-    return null;
-  }
-  return null
-}
-
-
-wss.on('connection', function connection(ws, request) {
-  console.log("ws connected!");
-  const url = request.url;
-  if (!url) {
-    return;
-  }
-
-  const queryParams = new URLSearchParams(url.split('?')[1]);
-  const token = queryParams.get('token') || "";
-  const userId = checkToken(token);
-
-  if (!userId) {
-    ws.close()
-    return null;
-  }
-
-  users.push({
-    userId,
-    rooms: [],
-    ws
+    regiserMessageHandler(ws);
   })
 
 
-  ws.on('message', function message(data) {
+})
+
+function regiserMessageHandler(ws: AuthWebSocket) {
+
+  ws.on('message', async (data) => {
 
     let parsedData;
-    if(typeof data !== 'string'){
-      parsedData = JSON.parse(data.toString());
-    }else{
-      parsedData = JSON.parse(data)
+
+    try {
+      parsedData = typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString());
+    } catch (error) {
+      console.log(`Error in parsing data ${error}`)
+      return; 
     }
+    
 
     if (parsedData.type === "join_room") {
       const user = users.find(x => x.ws === ws);
       user?.rooms.push(parsedData.roomId);
-    }
-
-    if (parsedData.type === "leave_room") {
-      const user = users.find(x => x.ws === ws);
-      if (!user) { return }
-      //@ts-ignore
-      user.rooms = user?.rooms.filter(x => x === parsedData.room);
+      return
     }
 
     if (parsedData.type === "chat") {
+      const user = users.find(u => u.ws === ws);
+      if (!user) {
+        return; 
+      }
+
+      if (!user.rooms.includes(parsedData.roomId)) {
+        return; 
+      }
+
       const roomId = parsedData.roomId;
-      const message = parsedData.message
+      const message = parsedData.message;
 
       messageQueue.add("store-message", {
         roomId: Number(roomId),
-        userId,
+        userId: ws.userId,
         message,
       }).then((job) => console.log("JOB ADDED:", job.id));
 
@@ -103,8 +101,28 @@ wss.on('connection', function connection(ws, request) {
           }))
         }
       })
+      return ;
 
+    }
+
+    if (parsedData.type === "leave_room") {
+      const user = users.find(x => x.ws === ws);
+      if (!user) { return }
+      //@ts-ignore
+      user.rooms = user?.rooms.filter(x => x !== parsedData.room);
+      return;
+    }
+
+  })
+
+  ws.on("close",() => {
+    //finding the element where their index is === current ws if find it it's return index if did'nt find it it's return -1 ;
+    const index = users.findIndex(u => u.ws === ws);
+
+    if (index !== -1) {
+      users.splice(index,1);// removing   the index of the user 
     }
   })
 
-})
+}
+
