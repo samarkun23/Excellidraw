@@ -79,7 +79,7 @@ export default function Dashboard() {
     <div className="flex h-screen w-screen bg-[#0f0f11] text-white overflow-hidden font-sans">
       
       {/* Sidebar */}
-      <div className="w-64 flex-shrink-0 border-r border-white/5 flex flex-col bg-[#0f0f11]">
+      <div className="w-64 shrink-0 border-r border-white/5 flex flex-col bg-[#0f0f11]">
         <div className="p-6">
           <div className="flex items-center gap-3 text-white mb-8">
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -136,8 +136,8 @@ export default function Dashboard() {
 
         <div className="mt-auto p-4 border-t border-white/5">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-[1px]">
-              <div className="w-full h-full rounded-full bg-[#0f0f11] p-[2px]">
+            <div className="w-9 h-9 rounded-full  from-indigo-500 to-purple-500 ">
+              <div className="w-full h-full rounded-full bg-[#0f0f11]">
                 <img 
                   src="https://github.com/shadcn.png" 
                   alt="Profile" 
@@ -216,7 +216,7 @@ export default function Dashboard() {
                 whileHover={{ y: -2 }}
                 className="group cursor-pointer"
               >
-                <div className="aspect-[4/3] rounded-xl border-2 border-dashed border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-indigo-500/50 transition-all flex flex-col items-center justify-center gap-3">
+                <div className=" rounded-xl border-2 border-dashed border-white/10 hover:border-indigo-500/50 transition-all flex flex-col items-center justify-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-indigo-600/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Plus className="w-6 h-6 text-indigo-400" />
                   </div>
@@ -235,7 +235,7 @@ export default function Dashboard() {
                   className="group cursor-pointer"
                 >
                   {/* Card Preview */}
-                  <div className={`aspect-[4/3] rounded-xl p-3 ${drawing.color} relative overflow-hidden`}>
+                  <div className={` rounded-xl p-3 ${drawing.color} relative overflow-hidden`}>
                     {/* Inner dashed border area */}
                     <div className="w-full h-full border-2 border-dashed border-black/10 rounded-lg flex items-center justify-center">
                       <PenTool className="w-8 h-8 text-black/10" />

@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/feature-module/queue-worker/messages.worker.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/feature-module/middleware/index.ts","./src/feature-module/queue-worker/messages.worker.ts"],"version":"5.9.2"}
