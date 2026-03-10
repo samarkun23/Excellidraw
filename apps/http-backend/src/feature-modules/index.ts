@@ -6,5 +6,6 @@ const mainRouter: Router = Router();
 
 mainRouter.use("/auth", authRouter);
 mainRouter.use("/room", roomRouter);
+    
 
 export { mainRouter }

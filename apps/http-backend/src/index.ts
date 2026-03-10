@@ -8,4 +8,4 @@ app.use(cors())
 
 app.use("/excallidraw", mainRouter)
 
-app.listen(3002, () => console.log("server started at port: 3000"));
+app.listen(3002, () => console.log("server started at port: 3002"));

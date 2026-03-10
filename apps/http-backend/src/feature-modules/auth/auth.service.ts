@@ -21,8 +21,13 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
   try {
 
-    let userEmail = await prismaClient.userSchema.findUnique({
-      where: { email: Parsedata.data.email, username: Parsedata.data.username }
+    let userEmail = await prismaClient.userSchema.findFirst({
+      where: {
+        OR: [
+          { email: Parsedata.data.email },
+          { username: Parsedata.data.username }
+        ]
+      }
     })
 
     if (userEmail) { return res.status(400).json({ message: "This email or username already exists" }) }
@@ -37,7 +42,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
       }
     })
 
-    res.json({
+    res.status(200).json({
       message: "user created "
     })
   } catch (error) {
@@ -83,7 +88,38 @@ authRouter.post("/signin", async (req: Request, res: Response) => {
   const token = jwt.sign({
     userId: user.id
   }, JWT_SECRET, { expiresIn: "7D" })
-  return res.json({ token, message: "User signin" });
+
+  // return res.json({ token, message: "User signin" });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  }).json({ message: "User signin successful" });
 
 }
 )
+
+authRouter.get('/validate', async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const user = await prismaClient.userSchema.findUnique({
+      where: { id: decoded.userId },
+      select: { id: true, username: true, email: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+})
