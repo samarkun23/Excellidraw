@@ -3,7 +3,8 @@ import { useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { LaserFlowBoxExample } from "../components/LaserFlowBoxExample";
-import Dashboard from "@repo/ui/Dashboard"
+import Dashboard from "./dashboard/page";
+import LandingPage from "../components/landing";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("");
@@ -11,7 +12,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#060010]">
-        <Dashboard />
+        <LandingPage />
     </div>
   );
 }

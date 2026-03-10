@@ -1,6 +1,9 @@
+import { PenTool } from 'lucide-react';
 import AuthPage from './AuthPage';
 import Auth from './AuthPage';
 import LaserFlow from './Laserflow';
+import { useRouter } from 'next/navigation';
+import { rotate } from 'three/tsl';
 // NOTE: You can also adjust the variables in the shader for super detailed customization
 
 // Basic Usage
@@ -9,7 +12,8 @@ import LaserFlow from './Laserflow';
 </div>
 
 // Image Example Interactive Reveal Effect
-export function LaserFlowBoxExample({isSignin}:{isSignin:boolean}) {
+export function LaserFlowBoxExample({ isSignin }: { isSignin: boolean }) {
+  const router = useRouter();
 
   return (
     <div
@@ -21,55 +25,27 @@ export function LaserFlowBoxExample({isSignin}:{isSignin:boolean}) {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: '#060010',
+        backgroundColor: '#000000',
       }}
-    // onMouseMove={(e) => {
-    //   const rect = e.currentTarget.getBoundingClientRect();
-    //   const x = e.clientX - rect.left;
-    //   const y = e.clientY - rect.top;
-    //   const el = revealImgRef.current;
-    //   if (el) {
-    //     el.style.setProperty('--mx', `${x}px`);
-    //     el.style.setProperty('--my', `${y + rect.height * 0.5}px`);
-    //   }
-    // }}
-    // onMouseLeave={() => {
-    //   const el = revealImgRef.current;
-    //   if (el) {
-    //     el.style.setProperty('--mx', '-9999px');
-    //     el.style.setProperty('--my', '-9999px');
-    //   }
-    // }}
     >
       <LaserFlow
         horizontalBeamOffset={-0.142}
         verticalBeamOffset={0.28}
-        color="#ac80ff"
+        color="#bdbdbd"
       />
+      <div className="absolute top-4 left-4 flex items-center gap-2 hover:cursor-pointer" onClick={() => { router.push("/") }}>
+        <div className="rounded w-8 h-8 flex justify-center items-center">
+          <PenTool className="w-5 h-5 text-white" />
+        </div>
+        <span className="text-xl font-bold text-white">SketchFlow</span>
+      </div>
 
-      {/* <div className='absolute bg-transparent'
-        style={{
-          transform: 'translateX(-50%)',
-          // top: '15%',
-          // left: '25%',
-          width: '28%',
-          height: '29vw',
-          borderColor: 'white',
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderRadius: '25px',
-          display: 'flex',
-          justifyContent: 'center',
-          padding: '2vw',
-          overflow: 'hidden'
-        }}
-      > */}
       <div
         className="
     absolute 
     bg-white/3
     backdrop-blur-lg
-    border border-[#d1b8ff]
+    border border-[#e6e6e6]
     rounded-[25px]
     flex justify-center
     p-[2vw]
@@ -82,7 +58,7 @@ export function LaserFlowBoxExample({isSignin}:{isSignin:boolean}) {
           height: "29vw",
         }}
       >
-        <AuthPage isSignin={isSignin}/>
+        <AuthPage isSignin={isSignin} />
       </div>
 
 
@@ -90,7 +66,7 @@ export function LaserFlowBoxExample({isSignin}:{isSignin:boolean}) {
 
       {/* </div> */}
       <div className='text-white' style={{ fontSize: '30px', position: 'absolute', top: '40%', right: '15vw' }}>
-        <h1>Welcome to the amazing course</h1>
+        <h1>Welcome to the <a className='text-indigo-500'>SketchFlow </a></h1>
       </div>
       {/* <div style={{
         position: 'absolute',
