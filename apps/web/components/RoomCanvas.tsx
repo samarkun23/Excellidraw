@@ -34,7 +34,7 @@ export function RoomCanvas({roomId}: {roomId: string}) {
 
 
     return <div >
-        <Canvas roomId={roomId} socket={socket} mode="collab" />
+        <Canvas roomId={roomId} socket={socket} mode="collab" isLocalCanvas={false}/>
 
     </div>
 }

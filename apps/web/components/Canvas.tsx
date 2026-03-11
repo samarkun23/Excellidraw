@@ -6,9 +6,11 @@ import { Draw } from "../app/draw/Draw";
 import { CanvasShareMenu } from "./CanvasShareMenu";
 
 export function Canvas({
+    isLocalCanvas,
     mode,
     roomId,
     socket }: {
+        isLocalCanvas: boolean,
         mode: "collab" | "personal",
         roomId?: string,
         socket?: WebSocket
@@ -76,7 +78,7 @@ export function Canvas({
                 <CanvasMenuRec selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
             </div>
             <div className=" top-4 right-4 z-10 bg-gray-800 h-12 w-32 flex justify-evenly rounded-xl fixed">
-                <CanvasShareMenu />
+                <CanvasShareMenu isLocalCanvas={isLocalCanvas} />
             </div>
         </div>
 
