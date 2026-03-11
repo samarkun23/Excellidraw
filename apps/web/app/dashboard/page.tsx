@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { randomUUID } from 'crypto';
 
 // Mock Data for Recent Drawings
 const RECENT_DRAWINGS = [
@@ -81,30 +82,31 @@ export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
 
-  // useEffect(() => {
-  //   async function validateToken() {
-  //     try {
-  //       const res = await axios.get("http://localhost:3002/excallidraw/auth/validate", { withCredentials: true });
-  //       setUser(res.data.user);
+  useEffect(() => {
+    async function validateToken() {
+      try {
+        const res = await axios.get("http://localhost:3002/excallidraw/auth/validate", { withCredentials: true });
+        console.log(res.data)
+        setUser(res.data.user);
 
-  //       if (res.status === 401) {
-  //         router.push("/signin");
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       router.push("/signin");
-  //     } 
-  //   }
-  //   validateToken();
-  // }, [router]);
+        if (res.status === 401) {
+          router.push("/signin");
+        }
+      } catch (error) {
+        console.log(error);
+        router.push("/signin");
+      } 
+    }
+    validateToken();
+  }, [router]);
 
-  // if(!user) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen w-screen bg-[#0f0f11] text-white">
-  //       <p className="text-lg">Validating session...</p>
-  //     </div>
-  //   )
-  // }
+  if(!user) {
+    return (
+      <div className="flex items-center justify-center h-screen w-screen bg-[#0f0f11] text-white">
+        <p className="text-lg">Validating session...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen w-screen bg-[#000000] text-white overflow-hidden font-sans">
@@ -119,7 +121,10 @@ export default function Dashboard() {
             <span className="font-bold text-lg tracking-tight">SketchFlow</span>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-2 bg-white/35 hover:bg-white/10 text-white py-2.5 rounded-lg transition-colors border border-white/35 font-medium text-sm mb-8">
+          <button className="w-full flex items-center justify-center gap-2 bg-white/35 hover:bg-white/10 text-white py-2.5 rounded-lg transition-colors border border-white/35 font-medium text-sm mb-8" onClick={() => {
+                alert('h')
+                router.push(`/canvas/${Math.floor(Math.random() * 1000)}`
+                )}}>
             <Plus className="w-4 h-4" />
             New Drawing
           </button>
@@ -224,6 +229,7 @@ export default function Dashboard() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-medium shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-colors"
+              onClick={() => router.push(`/localcanvas/${Math.floor(Math.random() * 1000)}`)}
             >
               <Plus className="w-4 h-4" />
               Create New Board

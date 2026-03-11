@@ -25,21 +25,21 @@ export class Draw {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private existingShapes: Shape[]
-  private roomId: string;
+  private roomId?: string;
   private clicked: boolean;
   private startX = 0;
   private startY = 0;
   private endX = 0;
   private endY = 0;
   private selectedTool: Tool = "circle";
-  socket: WebSocket
+  socket?: WebSocket
 
-  constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
+  constructor(canvas: HTMLCanvasElement, roomId?: string, socket?: WebSocket) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d")!;
     this.existingShapes = [];
-    this.roomId = roomId
-    this.socket = socket
+    this.roomId = roomId;
+    this.socket = socket;
     this.clicked = false;
     this.init();
     this.initHandlers();
@@ -60,18 +60,22 @@ export class Draw {
   }
 
   async init() {
-    this.existingShapes = await getExistingShapes(this.roomId);
+    if (this.socket && this.roomId) {
+      this.existingShapes = await getExistingShapes(this.roomId);
+    }
     this.clearCanvas();
   }
 
   initHandlers() {
-    this.socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+    if (this.socket && this.roomId) {
+      this.socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
 
-      if (message.type == 'chat') {
-        const parsedShape = JSON.parse(message.message);
-        this.existingShapes.push(parsedShape.shape);
-        this.clearCanvas();
+        if (message.type == 'chat') {
+          const parsedShape = JSON.parse(message.message);
+          this.existingShapes.push(parsedShape.shape);
+          this.clearCanvas();
+        }
       }
     }
   }
@@ -79,10 +83,10 @@ export class Draw {
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     //fill the black background
-    this.ctx.fillStyle = "rgba(0, 0, 0)"
+    this.ctx.fillStyle = "#000000";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.existingShapes.map((shape) => {
+    this.existingShapes.forEach((shape) => {
       if (shape.type === 'rect') {
         this.ctx.strokeStyle = "rgba(255, 255, 255)"
         this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
@@ -102,18 +106,25 @@ export class Draw {
   }
 
   mouseDownHandler = (e: { clientX: number; clientY: number; }) => {
+    const rect = this.canvas.getBoundingClientRect();
+
     this.clicked = true;
-    this.startX = e.clientX
-    this.startY = e.clientY
+    this.startX = e.clientX - rect.left;
+    this.startY = e.clientY - rect.top;
   }
 
   mouseUpHandler = (e: { clientX: number; clientY: number; }) => {
+    const rect = this.canvas.getBoundingClientRect();
 
     this.clicked = false;
     const width = e.clientX - this.startX;
     const height = e.clientY - this.startY;
-    this.endX = e.clientX;
-    this.endY = e.clientY
+
+    const currentX = e.clientX - rect.left;
+    const currentY = e.clientY - rect.top;
+
+    this.endX = currentX;
+    this.endY = currentY;
 
     //@ts-ignore
     const selectedTool = this.selectedTool;
@@ -150,18 +161,26 @@ export class Draw {
 
     this.existingShapes.push(shape)
 
-    this.socket.send(JSON.stringify({
-      type: "chat",
-      message: JSON.stringify({
-        shape
-      }),
-      roomId: this.roomId
-    }))
-
+    if (this.socket && this.roomId) {
+      this.socket.send(JSON.stringify({
+        type: "chat",
+        message: JSON.stringify({
+          shape
+        }),
+        roomId: this.roomId
+      }))
+    }
   }
 
   mouseMoveHandler = (e: { clientX: number; clientY: number; }) => {
+
+    
     if (this.clicked) {
+      const rect = this.canvas.getBoundingClientRect();
+
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+
       const width = e.clientX - this.startX;
       const height = e.clientY - this.startY;
 
@@ -185,7 +204,7 @@ export class Draw {
       } else if (selectedTool === 'line') {
         this.ctx.beginPath();
         this.ctx.moveTo(this.startX, this.startY)
-        this.ctx.lineTo(e.clientX, e.clientY);
+        this.ctx.lineTo(currentX, currentY);
         this.ctx.stroke();
         this.ctx.closePath();
       }
