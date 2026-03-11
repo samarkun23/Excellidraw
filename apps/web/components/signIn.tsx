@@ -11,26 +11,36 @@ export default function SignIn() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter();
+    const [loading, setLoading] = useState(false)
 
     async function signIn() {
-        const res = axios.post("http://localhost:3002/excallidraw/auth/signin", {
-            username,
-            email,
-            password
-        }, { withCredentials: true }
-        );
+        setLoading(true)
+        try {
+            const res = await axios.post("http://localhost:3002/excallidraw/auth/signin", {
+                email,
+                password
+            }, { withCredentials: true }
+            );
 
-        console.log(res);
-        alert("Signin successful");
-        //@ts-ignore
-        localStorage.setItem("token", res.data.token);
-        // localStorage.setItem("token", res.data.token);
+            console.log("Signin response", res.data);
+            alert(res.data.message);
+            router.push("/dashboard")
+
+        } catch (error) {
+            console.error("Signin error:", error);
+            alert(
+                //@ts-ignore
+                error?.response?.data?.message || "Signin failed. Check credentials."
+            );
+        }finally{
+            setLoading(false)
+        }
     }
 
     return (
         <div>
 
-            
+
 
             <div className="relative p-3">
 
@@ -120,8 +130,8 @@ export default function SignIn() {
 
             </div>
             <div className="p-2 m-2 rounded-2xl flex flex-col items-center pt-[2.5vw]">
-                <button className={buttonCss} onClick={signIn}>
-                    Sign In
+                <button className={buttonCss} onClick={signIn} disabled={loading}>
+                    {loading ? "Signing in..." : "Sign In"}
                 </button>
             </div>
 
