@@ -8,14 +8,11 @@ export interface AuthWebSocket extends WebSocket {
 }
 
 export function wsAuthMiddleware(ws: AuthWebSocket, request: any, next: () => void) {
-    const url = request.url;
-    if (!url) {
-        ws.close(1008, "No url found");
-        return;
-    }
+    
+    const cookiesHeader = request.headers.cookie || "";
 
-    const queryParams = new URLSearchParams(url.split("?")[1]);
-    const token = queryParams.get("token");
+    //@ts-ignore
+    const token = cookiesHeader.split(';').map(c => c.trim()).find(c => c.startsWith('token='))?.split('=')[1];
 
     if (!token) {
         ws.close(1008, "Token not found");
