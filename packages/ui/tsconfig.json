@@ -12,5 +12,5 @@
   },
   "include": [
     "src"
-  ]
+, "../../apps/web/components/Dashboard.tsx"  ]
 }
