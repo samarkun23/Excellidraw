@@ -6,7 +6,7 @@ import { ReactNode } from "react"
 export type Tool = 'circle' | 'rect' | 'line'
 
 function IconButton({ icon, onClick, activated }: { icon: ReactNode, onClick: () => void, activated: boolean }) {
-    return <div onClick={onClick} className={`pointer hover:bg-black rounded-xl ${activated ? "text-blue-400" : "text-white"}`}>
+    return <div onClick={onClick} className={`pointer hover:text-blue-300 rounded-xl ${activated ? "text-blue-400" : "text-white"}`}>
         {icon}
     </div>
 }

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { initDraw } from "../app/draw";
 import { CanvasMenuRec, Tool } from "./CanvasMenu";
 import { Draw } from "../app/draw/Draw";
+import { CanvasShareMenu } from "./CanvasShareMenu";
 
 export function Canvas({
     mode,
@@ -44,7 +45,7 @@ export function Canvas({
     // init draw engine
     useEffect(() => {
         if (!canvasRef.current) return;
-        if(size.width === 0 || size.height === 0) return;
+        if (size.width === 0 || size.height === 0) return;
 
         let g: Draw;
         if (mode === 'personal') {
@@ -61,7 +62,7 @@ export function Canvas({
             g.destroy();
         }
 
-    }, [canvasRef , mode, roomId, socket, size]);
+    }, [canvasRef, mode, roomId, socket, size]);
 
 
 
@@ -70,8 +71,13 @@ export function Canvas({
         <canvas ref={canvasRef} height={`${size.height}`} width={`${size.width}`} className="absolute top-0 left-0">
 
         </canvas>
-        <div className=" top-4 left-1/2 -translate-x-1/2 z-10 bg-gray-500 h-12 w-80 flex justify-evenly rounded-xl fixed">
-            <CanvasMenuRec selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+        <div>
+            <div className=" top-4 left-1/2 -translate-x-1/2 z-10 bg-gray-800 h-12 w-80 flex justify-evenly rounded-xl fixed">
+                <CanvasMenuRec selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+            </div>
+            <div className=" top-4 right-4 z-10 bg-gray-800 h-12 w-32 flex justify-evenly rounded-xl fixed">
+                <CanvasShareMenu />
+            </div>
         </div>
 
     </div>

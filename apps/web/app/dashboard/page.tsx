@@ -95,12 +95,12 @@ export default function Dashboard() {
       } catch (error) {
         console.log(error);
         router.push("/signin");
-      } 
+      }
     }
     validateToken();
   }, [router]);
 
-  if(!user) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center h-screen w-screen bg-[#0f0f11] text-white">
         <p className="text-lg">Validating session...</p>
@@ -112,7 +112,7 @@ export default function Dashboard() {
     <div className="flex h-screen w-screen bg-[#000000] text-white overflow-hidden font-sans">
 
       {/* Sidebar */}
-        <div className="w-64 shrink-0 border-r border-white/35 flex flex-col bg-[#000000]">
+      <div className="w-64 shrink-0 border-r border-white/35 flex flex-col bg-[#000000]">
         <div className="p-6">
           <div className="flex items-center gap-2 text-white mb-8">
             <div className=" rounded-lg flex items-center justify-center">
@@ -122,11 +122,11 @@ export default function Dashboard() {
           </div>
 
           <button className="w-full flex items-center justify-center gap-2 bg-white/35 hover:bg-white/10 text-white py-2.5 rounded-lg transition-colors border border-white/35 font-medium text-sm mb-8" onClick={() => {
-                alert('h')
-                router.push(`/canvas/${Math.floor(Math.random() * 1000)}`
-                )}}>
+            router.push(`/canvas/${Math.floor(Math.random() * 1000)}`
+            )
+          }}>
             <Plus className="w-4 h-4" />
-            New Drawing
+            New share Board
           </button>
 
           <div className="space-y-6">
@@ -136,6 +136,12 @@ export default function Dashboard() {
                 {SIDEBAR_ITEMS.map((item) => (
                   <button
                     key={item.label}
+                    onClick={() => {
+                      if (item.label === "Shared with friend") {
+                        alert("This feature is coming soon!");
+                        router.push(`/canvas/${Math.floor(Math.random() * 1000)}`)
+                      }
+                    }}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${item.active
                       ? 'bg-white/5 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
