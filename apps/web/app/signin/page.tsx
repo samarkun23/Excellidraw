@@ -1,6 +1,7 @@
 "use client"
 import { PenTool } from "lucide-react";
 import { LaserFlowBoxExample } from "../../components/LaserFlowBoxExample";
+import AuthPage from "../../components/AuthPage";
 
 export default function SigninPage() {
   return <div className="w-screen h-screen overflow-hidden text-white relative">
@@ -11,8 +12,8 @@ export default function SigninPage() {
       <span className="text-xl font-bold">SketchFlow</span>
     </div> */}
     {/* <div className="w-full h-full flex justify-center items-center"> */}
-      <LaserFlowBoxExample isSignin={true}
-      />;
+      {/* <LaserFlowBoxExample isSignin={true} */}
+      <AuthPage isSignin={true}/>      
 
     {/* </div> */}
   </div>

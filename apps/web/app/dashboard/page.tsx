@@ -1,317 +1,450 @@
-'use client'
+"use client";
+
 import {
   Search,
   LayoutGrid,
   Bell,
-  Menu,
   Plus,
   Clock,
   Star,
   Users,
   Trash2,
   PenTool,
-  MoreHorizontal,
-  FolderPlus,
+  Settings,
+  Sparkles,
+  ArrowRight,
+  ChevronRight,
   LogOut,
-  Settings
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { randomUUID } from 'crypto';
+} from "lucide-react";
 
-// Mock Data for Recent Drawings
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+// /* -------------------------------------------------------------------------- */
+// /*                                   MOCK DB                                  */
+// /* -------------------------------------------------------------------------- */
+
 const RECENT_DRAWINGS = [
   {
     id: 1,
     title: "System Architecture V2",
     time: "2 mins ago",
-    color: "bg-[#e3d5c2]", // Beige
-    users: ["U1", "U2"],
-    starred: true
+    color: "from-[#d6c7ff] to-[#b8a5ff]",
+    users: ["A", "K"],
+    starred: true,
   },
   {
     id: 2,
     title: "Q4 Marketing Brainstorm",
     time: "2 hours ago",
-    color: "bg-[#c2d1e3]", // Blueish
-    users: ["U3"],
-    starred: false
+    color: "from-[#b9d9ff] to-[#90bfff]",
+    users: ["M"],
+    starred: false,
   },
   {
     id: 3,
     title: "User Journey Map",
     time: "Yesterday",
-    color: "bg-[#e3c2d3]", // Pinkish
+    color: "from-[#ffc7df] to-[#ff99c7]",
     users: [],
-    starred: true
+    starred: true,
   },
   {
     id: 4,
     title: "Database Schema",
     time: "2 days ago",
-    color: "bg-[#d8d8d8]", // Grey
+    color: "from-[#d7d7d7] to-[#b8b8b8]",
     users: [],
-    starred: false
+    starred: false,
   },
   {
     id: 5,
     title: "Logo Concepts",
     time: "Last week",
-    color: "bg-[#c2e3cf]", // Greenish
-    users: [],
-    starred: false
-  }
+    color: "from-[#c7ffd9] to-[#99f0b7]",
+    users: ["R"],
+    starred: false,
+  },
 ];
 
 const SIDEBAR_ITEMS = [
-  { icon: Clock, label: "Recent", active: true },
-  { icon: Star, label: "Starred", active: false },
-  { icon: Users, label: "Shared with friend", active: false },
-  { icon: Trash2, label: "Trash", active: false },
+  {
+    icon: Clock,
+    label: "Recent",
+    active: true,
+  },
+  {
+    icon: Star,
+    label: "Starred",
+    active: false,
+  },
+  {
+    icon: Users,
+    label: "Shared",
+    active: false,
+  },
+  {
+    icon: Trash2,
+    label: "Trash",
+    active: false,
+  },
 ];
 
-const TEAMS = [
-  { label: "Design Team" },
-  { label: "Engineering" }
-];
+// /* -------------------------------------------------------------------------- */
+// /*                                  COMPONENT                                 */
+// /* -------------------------------------------------------------------------- */
 
 export default function Dashboard() {
-
   const router = useRouter();
+
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     async function validateToken() {
       try {
-        const res = await axios.get("http://localhost:3002/excallidraw/auth/validate", { withCredentials: true });
-        console.log(res.data)
-        setUser(res.data.user);
+        const res = await axios.get(
+          "http://localhost:3002/excallidraw/auth/validate",
+          {
+            withCredentials: true,
+          }
+        );
 
-        if (res.status === 401) {
-          router.push("/signin");
-        }
+        setUser(res.data.user);
       } catch (error) {
-        console.log(error);
         router.push("/signin");
       }
     }
+
     validateToken();
   }, [router]);
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen bg-[#0f0f11] text-white">
-        <p className="text-lg">Validating session...</p>
+      <div className="h-screen w-screen bg-black flex items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-5">
+          <div className="w-14 h-14 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+
+          <p className="text-lg text-gray-400">
+            Validating session...
+          </p>
+        </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex h-screen w-screen bg-[#000000] text-white overflow-hidden font-sans">
+    <div className="h-screen w-screen overflow-hidden bg-black text-white flex">
+      {/* -------------------------------------------------------------------------- */}
+      {/*                                  SIDEBAR                                   */}
+      {/* -------------------------------------------------------------------------- */}
 
-      {/* Sidebar */}
-      <div className="w-64 shrink-0 border-r border-white/35 flex flex-col bg-[#000000]">
-        <div className="p-6">
-          <div className="flex items-center gap-2 text-white mb-8">
-            <div className=" rounded-lg flex items-center justify-center">
+      <aside className="hidden md:flex w-[280px] shrink-0 border-r border-white/10 bg-white/[0.03] backdrop-blur-2xl flex-col">
+        {/* Logo */}
+        <div className="px-7 py-7 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
               <PenTool className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight">SketchFlow</span>
-          </div>
 
-          <button className="w-full flex items-center justify-center gap-2 bg-white/35 hover:bg-white/10 text-white py-2.5 rounded-lg transition-colors border border-white/35 font-medium text-sm mb-8" onClick={() => {
-            router.push(`/canvas/${Math.floor(Math.random() * 1000)}`
-            )
-          }}>
-            <Plus className="w-4 h-4" />
-            New share Board
+            <div onClick={() => {
+              router.push("/")
+            }}>
+              <h1 className="text-xl font-bold">
+                SketchFlow
+              </h1>
+
+              <p className="text-xs text-gray-500">
+                Collaborative workspace
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Create Button */}
+        <div className="px-5 pt-6">
+          <button
+            onClick={() =>
+              router.push(
+                `/canvas/${Math.floor(Math.random() * 1000)}`
+              )
+            }
+            className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 hover:opacity-90 transition-all duration-300 rounded-2xl px-5 py-4 flex items-center justify-center gap-2 font-semibold shadow-2xl shadow-indigo-500/20"
+          >
+            <Plus className="w-5 h-5" />
+            Collaborative Board
           </button>
+        </div>
 
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Library</h3>
-              <div className="space-y-0.5">
-                {SIDEBAR_ITEMS.map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => {
-                      if (item.label === "Shared with friend") {
-                        alert("This feature is coming soon!");
-                        router.push(`/canvas/${Math.floor(Math.random() * 1000)}`)
-                      }
-                    }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${item.active
-                      ? 'bg-white/5 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                      }`}
-                  >
-                    <item.icon className="w-4 h-4" />
+        {/* Navigation */}
+        <div className="px-4 pt-10">
+          <p className="text-xs text-gray-500 uppercase tracking-[0.2em] px-3 mb-4">
+            Workspace
+          </p>
+
+          <div className="space-y-1">
+            {SIDEBAR_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${
+                  item.active
+                    ? "bg-white/10 text-white"
+                    : "text-gray-400 hover:bg-white/[0.05] hover:text-white"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon className="w-4 h-4" />
+                  <span className="text-sm font-medium">
                     {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+                  </span>
+                </div>
 
-            {/* <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Teams</h3>
-              <div className="space-y-0.5">
-                {TEAMS.map((team) => (
-                  <button
-                    key={team.label}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                  >
-                    <Users className="w-4 h-4" />
-                    {team.label}
-                  </button>
-                ))}
-                <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
-                  <Plus className="w-4 h-4" />
-                  Create Team
-                </button>
-              </div>
-            </div> */}
+                <ChevronRight className="w-4 h-4 opacity-40" />
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="mt-auto p-4 border-t border-white/35">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full  from-indigo-500 to-purple-500 ">
-              <div className="w-full h-full rounded-full bg-[#000000]">
-                <img
-                  src="https://github.com/shadcn.png"
-                  alt="Profile"
-                  className="w-full h-full rounded-full"
-                />
+        {/* Upgrade Card */}
+        <div className="px-5 mt-8">
+          <div className="rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/10 p-5 relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-3xl rounded-full" />
+
+            <div className="relative z-10">
+              <div className="w-11 h-11 rounded-2xl bg-white/10 flex items-center justify-center mb-4">
+                <Sparkles className="w-5 h-5 text-indigo-300" />
               </div>
+
+              <h3 className="font-semibold text-lg">
+                Upgrade to Pro
+              </h3>
+
+              <p className="text-sm text-gray-300 mt-2 leading-relaxed">
+                Unlock unlimited boards, team workspaces and AI tools.
+              </p>
+
+              <button className="mt-5 bg-white text-black px-4 py-2 rounded-xl font-medium hover:bg-gray-200 transition">
+                Upgrade
+              </button>
             </div>
+          </div>
+        </div>
+
+        {/* User */}
+        <div className="mt-auto p-5 border-t border-white/10">
+          <div className="flex items-center gap-3">
+            <img
+              src="https://github.com/shadcn.png"
+              alt="profile"
+              className="w-11 h-11 rounded-2xl object-cover"
+            />
+
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white truncate">shadcn</div>
-              <div className="text-xs text-gray-500 truncate">Free Plan</div>
+              <h3 className="text-sm font-medium truncate">
+                {user?.name || "shadcn"}
+              </h3>
+
+              <p className="text-xs text-gray-500">
+                Free Plan
+              </p>
             </div>
-            <Settings className="w-4 h-4 text-gray-500 hover:text-white cursor-pointer" />
+
+            <button className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition">
+              <Settings className="w-4 h-4 text-gray-400" />
+            </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#000000]">
+      {/* -------------------------------------------------------------------------- */}
+      {/*                                  MAIN AREA                                 */}
+      {/* -------------------------------------------------------------------------- */}
+
+      <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-white/35">
-          <div className="flex-1 max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search drawings..."
-                className="w-full bg-white/5 border border-white/35 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
-            </div>
+        <header className="h-[80px] border-b border-white/10 px-6 md:px-10 flex items-center justify-between backdrop-blur-xl bg-black/40">
+          {/* Search */}
+          <div className="relative w-full max-w-xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+
+            <input
+              placeholder="Search boards, files, teams..."
+              className="w-full h-12 rounded-2xl bg-white/[0.04] border border-white/10 pl-12 pr-4 text-sm outline-none focus:border-indigo-500/50 transition"
+            />
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
-            <button className="p-2 text-gray-400 hover:text-white transition-colors">
-              <LayoutGrid className="w-5 h-5" />
+          {/* Actions */}
+          <div className="flex items-center gap-3 ml-5">
+            <button className="w-11 h-11 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/[0.08] transition">
+              <Bell className="w-5 h-5 text-gray-300" />
             </button>
-            <button className="p-2 text-gray-400 hover:text-white transition-colors">
-              <Bell className="w-5 h-5" />
+
+            <button className="w-11 h-11 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/[0.08] transition">
+              <LayoutGrid className="w-5 h-5 text-gray-300" />
             </button>
           </div>
         </header>
 
-        {/* Content Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-8">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6 md:px-10 py-10">
+          {/* Hero */}
+          <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent p-8 md:p-10 mb-12">
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/20 blur-[140px]" />
 
-          {/* Welcome Section */}
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                Welcome <span className="text-indigo-400">Designer</span>
-              </h1>
-              <p className="text-gray-400">Ready to create something awesome today?</p>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-medium shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-colors"
-              onClick={() => router.push(`/localcanvas/${Math.floor(Math.random() * 1000)}`)}
-            >
-              <Plus className="w-4 h-4" />
-              Create New Board
-            </motion.button>
-          </div>
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
+              <div>
+                {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm text-indigo-200 mb-5">
+                  <Sparkles className="w-4 h-4" />
+                  AI-powered collaboration
+                </div> */}
 
-          {/* Recent Drawings Grid */}
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Recent Drawings</h2>
-            <button className="text-sm text-indigo-400 hover:text-indigo-300">View all</button>
-          </div>
+                <h1 className="text-4xl md:text-5xl font-black leading-tight">
+                  Welcome back,
+                  <span className="block bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 text-transparent bg-clip-text">
+                    {user?.name || "Designer"}
+                  </span>
+                </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
-            {/* New Drawing Card */}
-            <motion.div
-              whileHover={{ y: -2 }}
-              className="group cursor-pointer"
-              key={Math.random()}
-            >
-              <div className=" rounded-xl border-2 border-dashed border-white/35 hover:border-indigo-500/50 transition-all flex flex-col items-center justify-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-indigo-600/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Plus className="w-6 h-6 text-indigo-400" />
-                </div>
-                <span className="text-sm font-medium text-gray-400 group-hover:text-indigo-400">New Drawing</span>
+                <p className="mt-5 text-gray-300 max-w-2xl leading-relaxed">
+                  Continue collaborating with your team and turn
+                  ideas into visual experiences.
+                </p>
               </div>
-              {/* Spacer to align with other cards text */}
-              <div className="mt-3 h-10"></div>
+
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() =>
+                  router.push(
+                    `/localcanvas/${Math.floor(
+                      Math.random() * 1000
+                    )}`
+                  )
+                }
+                className="group bg-white text-black px-7 py-4 rounded-2xl font-semibold flex items-center gap-2 hover:bg-gray-200 transition shadow-2xl"
+              >
+                Create Local Board
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+              </motion.button>
+            </div>
+          </section>
+
+          {/* Section Heading */}
+          <div className="flex items-center justify-between mb-7">
+            <div>
+              <h2 className="text-2xl font-bold">
+                Recent Boards [ This feature is coming soon ]
+              </h2>
+
+              <p className="text-gray-500 mt-1">
+                Pick up where you left off.
+              </p>
+            </div>
+
+            <button className="text-sm text-indigo-400 hover:text-indigo-300 transition">
+              View all
+            </button>
+          </div>
+
+          {/* Boards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
+            {/* Create New */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="group cursor-pointer"
+            >
+              <div
+                onClick={() =>
+                  router.push(
+                    `/canvas/${Math.floor(
+                      Math.random() * 1000
+                    )}`
+                  )
+                }
+                className="h-[260px] rounded-[30px] border-2 border-dashed border-white/10 hover:border-indigo-500/50 bg-white/[0.03] transition-all flex flex-col items-center justify-center"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-5 group-hover:scale-110 transition">
+                  <Plus className="w-8 h-8 text-indigo-400" />
+                </div>
+
+                <h3 className="font-semibold text-lg">
+                  Create Collaborative Board
+                </h3>
+
+                <p className="text-sm text-gray-500 mt-2">
+                  Start from a blank canvas
+                </p>
+              </div>
             </motion.div>
 
-            {/* Drawing Cards */}
+            {/* Existing Boards */}
             {RECENT_DRAWINGS.map((drawing) => (
               <motion.div
-                whileHover={{ y: -2 }}
+                whileHover={{ y: -5 }}
+                key={drawing.id}
                 className="group cursor-pointer"
-                key={Math.random()}
               >
-                {/* Card Preview */}
-                <div className={` rounded-xl p-3 ${drawing.color} relative overflow-hidden`}>
-                  {/* Inner dashed border area */}
-                  <div className="w-full h-full border-2 border-dashed border-black/35 rounded-lg flex items-center justify-center">
-                    <PenTool className="w-8 h-8 text-black/10" />
+                <div className="rounded-[30px] overflow-hidden border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] transition-all">
+                  {/* Preview */}
+                  <div
+                    className={`h-[190px] bg-gradient-to-br ${drawing.color} relative overflow-hidden`}
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.08)_1px,transparent_1px)] bg-[size:26px_26px]" />
+
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <PenTool className="w-14 h-14 text-black/20" />
+                    </div>
+
+                    {drawing.starred && (
+                      <div className="absolute top-4 right-4">
+                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                      </div>
+                    )}
                   </div>
 
-                  {drawing.starred && (
-                    <div className="absolute top-3 right-3 text-yellow-600">
-                      <Star className="w-4 h-4 fill-current" />
-                    </div>
-                  )}
-                </div>
+                  {/* Info */}
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold text-lg group-hover:text-indigo-300 transition">
+                          {drawing.title}
+                        </h3>
 
-                {/* Card Info */}
-                <div className="mt-3 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
-                      {drawing.title}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{drawing.time}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Edited {drawing.time}
+                        </p>
+                      </div>
+
+                      <button className="w-9 h-9 rounded-xl hover:bg-white/10 flex items-center justify-center transition">
+                        <LayoutGrid className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
+
+                    {/* Users */}
+                    <div className="mt-5 flex items-center justify-between">
+                      <div className="flex -space-x-2">
+                        {drawing.users.map((u, i) => (
+                          <div
+                            key={i}
+                            className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 border-2 border-black flex items-center justify-center text-xs font-bold"
+                          >
+                            {u}
+                          </div>
+                        ))}
+                      </div>
+
+                      <button className="text-sm text-indigo-300 hover:text-indigo-200 transition">
+                        Open
+                      </button>
+                    </div>
                   </div>
-
-                  {drawing.users.length > 0 && (
-                    <div className="flex -space-x-2">
-                      {drawing.users.map((u, i) => (
-                        <div key={i} className="w-6 h-6 rounded-full bg-indigo-500 ring-2 ring-[#0f0f11] flex items-center justify-center text-[10px] font-bold text-white">
-                          {u}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </motion.div>
             ))}
-
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
