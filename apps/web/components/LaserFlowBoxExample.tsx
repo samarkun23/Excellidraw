@@ -16,58 +16,14 @@ export function LaserFlowBoxExample({ isSignin }: { isSignin: boolean }) {
   const router = useRouter();
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        backgroundColor: '#000000',
-      }}
-    >
-      <LaserFlow
-        horizontalBeamOffset={-0.142}
-        verticalBeamOffset={0.28}
-        color="#bdbdbd"
-      />
-      <div className="absolute top-4 left-4 flex items-center gap-2 hover:cursor-pointer" onClick={() => { router.push("/") }}>
-        <div className="rounded w-8 h-8 flex justify-center items-center">
-          <PenTool className="w-5 h-5 text-white" />
-        </div>
-        <span className="text-xl font-bold text-white">SketchFlow</span>
-      </div>
-
-      <div
-        className="
-    absolute 
-    bg-white/3
-    backdrop-blur-lg
-    border border-[#e6e6e6]
-    rounded-[25px]
-    flex justify-center
-    p-[2vw]
-    overflow-visible
-    z-50
-  "
-        style={{
-          transform: "translateX(-50%)",
-          width: "28%",
-          height: "29vw",
-        }}
-      >
+    <div>
+      
         <AuthPage isSignin={isSignin} />
-      </div>
 
 
       {/* <AuthPage /> */}
 
       {/* </div> */}
-      <div className='text-white' style={{ fontSize: '30px', position: 'absolute', top: '40%', right: '15vw' }}>
-        <h1>Welcome to the <a className='text-indigo-500'>SketchFlow </a></h1>
-      </div>
       {/* <div style={{
         position: 'absolute',
         top: '50%',
