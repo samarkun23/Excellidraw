@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "@repo/be-common/config";

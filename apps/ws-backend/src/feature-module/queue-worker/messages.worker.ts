@@ -1,9 +1,10 @@
-import { tryCatch, Worker } from "bullmq";
+import 'dotenv/config';
+import { Worker } from "bullmq";
 import IORedis from 'ioredis';
 import { prismaClient } from "@repo/db/client"
 
 console.log("Entering ")
-const connection = new IORedis({
+const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
     maxRetriesPerRequest: null,
     enableReadyCheck: false
 });

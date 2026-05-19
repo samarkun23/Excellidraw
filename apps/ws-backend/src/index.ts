@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "@repo/be-common/config"
@@ -5,7 +6,10 @@ import { Queue } from "bullmq";
 import IORedis from 'ioredis'
 import { AuthWebSocket, wsAuthMiddleware } from "./feature-module/middleware";
 
-const wss = new WebSocketServer({ port: 8080 });
+const PORT = process.env.PORT || 8080;
+const wss = new WebSocketServer({ port: Number(PORT) || 8080 });
+console.log("Dotevn loaded, " + process.env.REDIS_URL);
+console.log("JWT_SECRET", JWT_SECRET);
 
 interface User {
   ws: WebSocket,
@@ -15,7 +19,7 @@ interface User {
 
 const users: User[] = [];
 
-const connection = new IORedis({
+const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
   maxRetriesPerRequest: null,
   enableReadyCheck: false
 });

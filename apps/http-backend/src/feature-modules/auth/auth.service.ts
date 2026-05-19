@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Request, Response, Router } from "express"
 import { registerSchema, loginSchema, createRoomSchema } from "@repo/common/types"
 import { prismaClient } from '@repo/db/client'
