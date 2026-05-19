@@ -1,135 +1,378 @@
-# This project is under development
+# ✨ Sketchboard
 
-We are almost ready just few work left .
+> Sketchboard is a collaborative drawing application featuring a real-time canvas, multiplayer synchronization.
 
-## Using this example
+Sketchboard is a modern monorepo application built for real-time collaborative drawing experiences.
+It combines a blazing-fast Next.js frontend, WebSocket-powered collaboration, BullMQ-based persistence, and shared packages for scalable full-stack development.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
+# 🚀 Features
+
+* 🎨 Real-time collaborative canvas
+* ⚡ WebSocket-powered live synchronization
+* 🔐 Authentication system with JWT
+* 🧠 Persistent room history using BullMQ workers (comming soon)
+* 📦 Turborepo monorepo architecture
+* 🗄️ Prisma ORM + PostgreSQL
+* 🎯 Shared UI & TypeScript packages
+* 💨 TailwindCSS shared configuration
+* 🧩 Fully modular backend architecture
+
+---
+
+# Project Structure overview ⚡
+
+This project, Sketchboard, is a full-stack monorepo designed for a collaborative drawing application. It uses pnpm workspaces for package management and Turborepo for build orchestration.
+
+### 🏗️ Architecture Overview
+  The project is split into Applications (runnable services) and Packages (shared libraries).
+
+  📱 Applications (apps/)
+   * web: A Next.js frontend application using the App Router.
+       * Styling: Tailwind CSS and Vanilla CSS.
+       * Canvas Logic: Located in app/draw/ and app/canvas/, handling the core drawing functionality.
+       * Features: Includes Sign-in/Sign-up flows, a dashboard, and collaborative drawing rooms ([roomId]).
+   * http-backend: A Node.js service (likely Express) handling RESTful operations.
+       * Modules: Auth, Room management, and Middleware.
+   * ws-backend: A dedicated WebSocket server.
+       * Handles real-time collaboration, allowing multiple users to draw on the same canvas simultaneously.
+       * Includes a queue-worker for processing messages.
+
+   **📦 Shared Packages (packages/)**
+   * db: Centralized database logic using Prisma ORM. It defines the schema.prisma used by both backends.
+   * common: Shared TypeScript types and constants used by both the frontend and backends to ensure type safety across the stack.
+   * be-common: Shared logic specifically for the backend services.
+   * ui: A shared React component library (includes a Button.tsx and uses Tailwind).
+   * eslint-config & typescript-config: Standardized linting and TypeScript configurations used across all sub-projects.
+
+  **🛠️ Key Technologies**
+   * Frontend: Next.js, React, Tailwind CSS, Lucide React (implied by icons).
+   * Backend: Node.js, TypeScript, WebSockets.
+   * Database: Prisma (PostgreSQL/MySQL based on typical Prisma usage).
+   * Monorepo Tools: pnpm, Turborepo.
+
+  This structure allows for high code reuse (especially types and database schemas) and keeps the real-time drawing logic (ws-backend) separate from
+  the standard API logic (http-backend).
+
+---
+
+# 🏗️ Monorepo Structure
+
+```bash
+Sketchboard/
+│
+├── apps/
+│   ├── web/                # Next.js frontend
+│   ├── http-backend/       # Express REST API
+│   └── ws-backend/         # WebSocket server + BullMQ workers
+│
+├── packages/
+│   ├── db/                 # Prisma client wrapper
+│   ├── common/             # Shared types & zod schemas
+│   └── ui/                 # Shared Tailwind/UI config
+│
+├── prisma/                 # Prisma schema & migrations
+└── turbo.json
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+# 🖥️ Tech Stack
 
-### Apps and Packages
+## Frontend
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+* Next.js (App Router)
+* React
+* TypeScript
+* TailwindCSS
+* WebGL / Shader-based visuals
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Backend
 
-### Utilities
+* Express.js
+* WebSocket Server
+* BullMQ
+* Redis
+* Prisma ORM
 
-This Turborepo has some additional tools already setup for you:
+## Database & Infra
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+* PostgreSQL
+* Redis
 
-### Build
+## Tooling
 
-To build all apps and packages, run the following command:
+* Turborepo
+* pnpm
 
+---
+
+# 📂 Important Files
+
+## Frontend
+
+| File                                          | Description                       |
+| --------------------------------------------- | --------------------------------- |
+| `apps/web/components/Canvas.tsx`              | Main collaborative canvas wrapper |
+| `apps/web/app/draw/*`                         | Drawing engine & shape handling   |
+| `apps/web/components/AuthPage.tsx`            | Authentication UI                 |
+| `apps/web/components/LaserFlowBoxExample.tsx` | Demo shader wrapper               |
+
+## Backend
+
+| File                             | Description               |
+| -------------------------------- | ------------------------- |
+| `apps/http-backend/src/index.ts` | Express server bootstrap  |
+| `auth.service.ts`                | Authentication logic      |
+| `room.ts`                        | Room history endpoints    |
+| `apps/ws-backend/src/index.ts`   | WebSocket server          |
+| `messages.worker.ts`             | BullMQ persistence worker |
+
+---
+
+# 📋 Requirements
+
+Before starting the project, make sure you have:
+
+* Node.js `18+`
+* `pnpm`
+* PostgreSQL database
+* Redis server
+
+---
+
+# 🔐 Environment Variables
+
+Create a `.env` file in the apps/http-backend and apps/web and apps/ws-backend and packages/db directories.
+
+The following environment variables are required:
+**http-backend**
+```env
+FRONTEND_URL=localhost:3000
+PORT=3002
+JWT_SECRET=your_jwt_secret_key
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+**web**
+```env
+BACKEND_URL=localhost:3002
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
+**ws-backend**
+```env
+PORT=8080
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your_jwt_secret_key
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+**db**
+```env
+DATABASE_URL="postgresql://postgres:mypassword@localhost:5432/postgres"
 ```
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+# ⚙️ Installation
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/samarkun23/Excellidraw.git
+cd Excellidraw
+```
+
+## 2. Install dependencies
+
+```bash
+pnpm install
+```
+
+## 3. Setup environment variables
+
+Create a `.env` file and add the required variables.
+
+---
+
+# 🚀 Running the Project
+
+## Run everything (recommended)
+
+```bash
+pnpm turbo dev
+```
+
+## Run only the frontend
+
+```bash
+pnpm turbo dev --filter=web
+```
+
+## Run individual services
+
+### Frontend
+
+```bash
+cd apps/web
+pnpm dev
+```
+
+### HTTP Backend
+
+```bash
+cd apps/http-backend
+pnpm dev
+```
+
+### WebSocket Backend
+
+```bash
+cd apps/ws-backend
+pnpm dev
+```
+
+---
+
+# 🏗️ Build the Project
+
+```bash
+pnpm turbo build
+```
+
+---
+
+# 🔄 How Realtime Collaboration Works
+
+```text
+Client → WebSocket Server → BullMQ Queue → Worker → Database
+```
+
+### Workflow
+
+1. The client connects to the WebSocket server.
+2. Drawing events are emitted in real time.
+3. Messages are queued using BullMQ.
+4. Workers persist data into PostgreSQL.
+5. Room history is fetched through the HTTP backend.
+
+---
+
+# 🧠 Development Notes
+
+## Tailwind Configuration
+
+Shared Tailwind presets are located in:
+
+```bash
+packages/ui
+```
+
+Make sure your frontend imports the shared preset correctly.
+
+---
+
+## Prisma
+
+Run migrations before starting the backend:
+
+```bash
+cd packages/db
+npx prisma migrate dev
+npx prisma generate
+```
+
+---
+
+# 🛠️ Troubleshooting
+
+## Hydration / SSR Issues
+
+If you encounter hydration mismatches in Next.js:
+
+* Use `"use client"` for browser-only components
+* Avoid `Date.now()` or `Math.random()` during SSR
+* Keep server/client-rendered values deterministic
+
+---
+
+## Canvas Not Filling Screen
+
+Ensure:
+
+```css
+position: fixed;
+inset: 0;
+height: 100vh;
+```
+
+Also resize the canvas using `devicePixelRatio` for crisp rendering.
+
+---
+
+## WebSocket Connection Failing
+
+* Verify `WS_URL`
+* Ensure the WebSocket server is running
+* Confirm ports match frontend config
+
+---
+
+## BullMQ Worker Issues
+
+* Check if Redis is running
+* Verify `REDIS_URL`
+* Ensure workers are started
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+### Steps
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Open a pull request
+
+Please keep frontend and backend changes separated whenever possible.
+
+---
+
+# 📌 Future Improvements
+
+* [ ] Multiplayer cursors
+* [ ] Undo / Redo synchronization
+* [ ] File export support
+* [ ] Presence indicators
+* [ ] End-to-end encryption
+* [ ] AI-assisted drawing tools
+* [ ] More drawing tools
+* [ ] Chat support
+
+<!-- --- -->
+
+<!-- # 📄 License -->
+
+<!-- This project is licensed under the **MIT License**. -->
+
+---
+
+# Project Preview
+![Home Page](./assets/excellidraw_dashboard.png)
+![Room Page](./assets/excellidraw_board.png)
+![Canvas Page](./assets/execllidraw_sketch.png)
+
+
+# ⭐ Support
+
+If you like this project:
+
+* Give it a ⭐ on GitHub
+* Share it with developers
+* Contribute new features
+
+---
+
+# 👨‍💻 Author
+
+Built with passion using modern web technologies.
