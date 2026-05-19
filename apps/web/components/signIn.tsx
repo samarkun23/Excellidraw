@@ -1,4 +1,5 @@
 "use client";
+import 'dotenv/config'
 import axios from "axios";
 import { buttonCss } from "./AuthPage";
 import { useState } from "react";
@@ -13,10 +14,12 @@ export default function SignIn() {
     const router = useRouter();
     const [loading, setLoading] = useState(false)
 
+    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3002";
+
     async function signIn() {
         setLoading(true)
         try {
-            const res = await axios.post("http://localhost:3002/excallidraw/auth/signin", {
+            const res = await axios.post(`${BACKEND_URL}/excallidraw/auth/signin`, {
                 email,
                 password
             }, { withCredentials: true }

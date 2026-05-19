@@ -1,5 +1,5 @@
 "use client";
-
+import 'dotenv/config'
 import {
   Search,
   LayoutGrid,
@@ -101,11 +101,15 @@ export default function Dashboard() {
 
   const [user, setUser] = useState<any>(null);
 
+  const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3002";
+  console.log("Backend URL:", BACKEND_URL);
+  console.log(process.env.BACKEND_URL);
+
   useEffect(() => {
     async function validateToken() {
       try {
         const res = await axios.get(
-          "http://localhost:3002/excallidraw/auth/validate",
+          `${BACKEND_URL}/excallidraw/auth/validate`,
           {
             withCredentials: true,
           }

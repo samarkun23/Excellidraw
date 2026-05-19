@@ -1,4 +1,5 @@
 'use client'
+import 'dotenv/config'
 import axios from "axios"
 import { useState } from "react"
 import { buttonCss } from "./AuthPage";
@@ -13,9 +14,11 @@ export default function SignUp() {
 
     const router = useRouter();
 
+    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3002";
+
     async function signUp() {
         try {
-            const res = await axios.post("http://localhost:3002/excallidraw/auth/signup", {
+            const res = await axios.post(`${BACKEND_URL}/excallidraw/auth/signup`, {
                 username,
                 email,
                 password

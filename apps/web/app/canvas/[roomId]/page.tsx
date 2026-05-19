@@ -1,4 +1,5 @@
 'use client';
+import 'dotenv/config'
 import { useRouter } from "next/navigation";
 import { RoomCanvas } from "../../../components/RoomCanvas";
 import { use, useEffect, useState } from "react";
@@ -13,6 +14,8 @@ export default function CanvasPage({ params }: {
     const router = useRouter();
     const [user, setUser] = useState<null>(null);
 
+    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3002";
+
     useEffect(() => {
         if (!roomId) {
             alert("Invalid room id");
@@ -23,7 +26,7 @@ export default function CanvasPage({ params }: {
         async function validateToken() {
 
             try {
-                const res = await axios.get("http://localhost:3002/excallidraw/auth/validate", { withCredentials: true });
+                const res = await axios.get(`${BACKEND_URL}/excallidraw/auth/validate`, { withCredentials: true });
                 setUser(res.data.user);
 
                 if (res.status === 401) {
